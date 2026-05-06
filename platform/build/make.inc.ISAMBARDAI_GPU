@@ -1,0 +1,38 @@
+#----------------------------------------------------------
+# Cray EX (aip2) [GPU nodes]
+#
+# - 288 CPU cores (Nvidia Grace) + 4 GPUs (GH200)
+#----------------------------------------------------------
+
+IDENTITY="Isambard-AI GPU"
+CORES_PER_NODE=288
+NUMAS_PER_NODE=4
+
+# Fortran 90/95 compiler
+FC = ftn -module ${GACODE_ROOT}/modules -Mpreprocess -DUSE_INLINE -craype-verbose -Mdefaultunit
+
+# Fortran 77 compiler
+F77 = ${FC}
+
+# Compiler options/flags
+ifneq ($(GACODE_OMPGPU),1)
+FACC   =-acc -Minfo=accel -target-accel=nvidia80 -cudalib=cufft
+else
+FACC   =-mp=gpu -DOMPGPU -Minfo=mp,accel -target-accel=nvidia80 -cudalib=cufft
+endif
+FOMP   =-mp -Mstack_arrays 
+FMATH  =-r8 
+FOPT   =-fast
+FDEBUG =-g -Kieee -Ktrap=fp,divz -Mbounds -Mchkptr -Mchkstk -traceback -Minform=inform
+F2PY   = f2py --fcompiler=pg
+
+
+# System math libraries
+LMATH=-llapack -lblas
+
+# NetCDF
+NETCDF=-L${NETCDF_DIR}/lib -lnetcdff -lnetcdf
+NETCDF_INC = ${NETCDF_DIR}/include
+
+# Archive 
+ARCH = ar cr
