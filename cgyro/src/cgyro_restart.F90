@@ -13,7 +13,7 @@ module cgyro_restart
   integer, parameter :: restart_header_size = 1024
   integer, parameter :: restart_magic = 140974129
   integer, parameter :: restart_version = 3
-
+  character(len=20) :: i_restart
   integer, private :: t_velocity_order
   integer, private :: t_nt_loc
   integer, private :: t_nv_loc
@@ -396,9 +396,9 @@ subroutine cgyro_read_restart
         source(j,:,0) = h_x(ic0+j,:,0)
         h_x(ic0+j,:,0) = 0.0
      enddo
-     sa = 0.0
+     dsrc = 0.0
      do j=1,nint(t_current/delta_t)
-        sa = 1.0+exp(-delta_t/tau_ave)*sa
+        dsrc = 1.0+exp(-delta_t/tau_ave)*dsrc
      enddo
   endif
 
